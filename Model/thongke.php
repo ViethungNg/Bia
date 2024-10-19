@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $totalBookings = $totalBookingsRow['totalBookings'];
 
     // Đếm số bàn đang chơi
-    $sqlPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM banbia WHERE trangThai = 'Đang chơi'";
+    $sqlPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM Lichdat WHERE trangThai = 'Đang chơi'";
     $playingTablesResult = $conn->query($sqlPlayingTables);
     $playingTablesRow = $playingTablesResult->fetch_assoc();
     $totalPlayingTables = $playingTablesRow['totalPlayingTables'];

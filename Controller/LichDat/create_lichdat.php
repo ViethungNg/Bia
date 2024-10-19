@@ -3,15 +3,13 @@
 include '../../Connect/connect.php';
 session_start();
 
-
-
 // Lấy thông tin từ form
 $maBanBia = $_POST['maBanBia'];
 $maTaiKhoan = $_POST['maTaiKhoan'];
 $ngayDat = $_POST['ngayDat'];
 $gioBatDau = $_POST['gioBatDau'];
 $gioKetThuc = $_POST['gioKetThuc'];
-$trangThai = $_POST['trangThai'];
+$trangThai = "Chờ duyệt"; // Gán trạng thái mặc định
 
 // Thực hiện câu lệnh SQL để thêm lịch đặt vào cơ sở dữ liệu
 $sql = "INSERT INTO lichdat (maBanBia, maTaiKhoan, ngayDat, gioBatDau, gioKetThuc, trangThai) VALUES (?, ?, ?, ?, ?, ?)";

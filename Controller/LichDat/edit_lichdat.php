@@ -1,5 +1,5 @@
 <?php
-include '../../Connect/connect.php';
+include '../../Connect/connect.php'; // Kết nối đến cơ sở dữ liệu
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $maLichDat = $_POST['maLichDat'];
@@ -10,19 +10,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $gioKetThuc = $_POST['gioKetThuc'];
     $trangThai = $_POST['trangThai'];
 
-    // Cập nhật thông tin lịch đặt
-    $sql = "UPDATE lichdat SET maBanBia = ?, maTaiKhoan = ?, ngayDat = ?, gioBatDau = ?, gioKetThuc = ?, trangThai = ? WHERE maLichDat = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iissssi", $maBanBia, $maTaiKhoan, $ngayDat, $gioBatDau, $gioKetThuc, $trangThai, $maLichDat);
-    $stmt->execute();
+    // Câu truy vấn cập nhật
+    $sql = "UPDATE LICHDAT SET maBanBia='$maBanBia', maTaiKhoan='$maTaiKhoan', ngayDat='$ngayDat', gioBatDau='$gioBatDau', gioKetThuc='$gioKetThuc', trangThai='$trangThai' WHERE maLichDat='$maLichDat'";
 
-    if ($stmt->affected_rows > 0) {
+    if ($conn->query($sql) === TRUE) {
         header("Location: manage_lichdat.php?msg=Cập nhật lịch đặt thành công");
     } else {
-        header("Location: manage_lichdat.php?msg=Không thể cập nhật lịch đặt");
+        header("Location: manage_lichdat.php?msg=Cập nhật lịch đặt không thành công");
     }
-
-    $stmt->close();
 }
 
 $conn->close();

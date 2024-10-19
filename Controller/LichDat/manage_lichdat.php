@@ -85,6 +85,7 @@ $result_tai_khoan = $conn->query($sql_tai_khoan);
                         echo "<a href='delete_lichdat.php?id=" . $row['maLichDat'] . "' class='btn btn-danger btn-sm' onclick='return confirm(\"Bạn có chắc chắn muốn xóa lịch đặt này?\")'>Xóa</a> ";
                         if ($row['trangThai'] == 'Chờ duyệt') {
                             echo "<a href='duyet_lichdat.php?id=" . $row['maLichDat'] . "' class='btn btn-success btn-sm'>Duyệt</a> ";
+                            echo "<a href='huy_lichdat.php?id=" . $row['maLichDat'] . "' class='btn btn-danger btn-sm'>Hủy</a>"; // Nút Hủy
                         }
                         if ($row['trangThai'] == 'Đang chơi') {
                             echo "<a href='thanhtoan_lichdat.php?id=" . $row['maLichDat'] . "' class='btn btn-primary btn-sm'>Thanh Toán</a>";
@@ -101,7 +102,7 @@ $result_tai_khoan = $conn->query($sql_tai_khoan);
         </table>
     </div>
 
-    <!-- Modal Popup Thêm Lịch Đặt -->
+      <!-- Modal Popup Thêm Lịch Đặt -->
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -153,15 +154,6 @@ $result_tai_khoan = $conn->query($sql_tai_khoan);
                             <input type="time" name="gioKetThuc" id="add_gioKetThuc" class="form-control" required>
                         </div>
 
-                        <!-- Trạng Thái -->
-                        <div class="form-group">
-                            <label for="add_trangThai">Trạng Thái</label>
-                            <select name="trangThai" id="add_trangThai" class="form-control" required>
-                                <option value="Chờ duyệt">Chờ duyệt</option>
-                                <option value="Đang chơi">Đang chơi</option>
-                                <option value="Hoàn tất">Hoàn tất</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
@@ -171,6 +163,78 @@ $result_tai_khoan = $conn->query($sql_tai_khoan);
             </div>
         </div>
     </div>
+
+    
+    <!-- Modal Sửa Lịch Đặt -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Sửa Lịch Đặt</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="edit_lichdat.php" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="maLichDat" id="edit_maLichDat">
+                    <div class="form-group">
+                        <label for="edit_maBanBia">Mã Bàn Bia</label>
+                        <input type="text" name="maBanBia" id="edit_maBanBia" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_maTaiKhoan">Mã Tài Khoản</label>
+                        <input type="text" name="maTaiKhoan" id="edit_maTaiKhoan" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_ngayDat">Ngày Đặt</label>
+                        <input type="date" name="ngayDat" id="edit_ngayDat" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_gioBatDau">Giờ Bắt Đầu</label>
+                        <input type="time" name="gioBatDau" id="edit_gioBatDau" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_gioKetThuc">Giờ Kết Thúc</label>
+                        <input type="time" name="gioKetThuc" id="edit_gioKetThuc" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_trangThai">Trạng Thái</label>
+                        <select name="trangThai" id="edit_trangThai" class="form-control" required>
+                            <option value="Chờ duyệt">Chờ duyệt</option>
+                            <option value="Đã đặt">Đã đặt</option>
+                            <option value="Đang chơi">Đang chơi</option>
+                            <option value="Hoàn thành">Hoàn thành</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Cập Nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Hàm chỉnh sửa lịch đặt
+    function editLichDat(maLichDat, maBanBia, maTaiKhoan, ngayDat, gioBatDau, gioKetThuc, trangThai) {
+        // Điền thông tin vào modal
+        document.getElementById('edit_maLichDat').value = maLichDat;
+        document.getElementById('edit_maBanBia').value = maBanBia;
+        document.getElementById('edit_maTaiKhoan').value = maTaiKhoan;
+        document.getElementById('edit_ngayDat').value = ngayDat;
+        document.getElementById('edit_gioBatDau').value = gioBatDau;
+        document.getElementById('edit_gioKetThuc').value = gioKetThuc;
+        document.getElementById('edit_trangThai').value = trangThai;
+
+        // Hiển thị modal
+        $('#editModal').modal('show');
+    }
+</script>
+
 
     <!-- Modal Popup Tìm Kiếm -->
     <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
@@ -237,8 +301,17 @@ $result_tai_khoan = $conn->query($sql_tai_khoan);
 
         // Hàm chỉnh sửa lịch đặt
         function editLichDat(maLichDat, maBanBia, maTaiKhoan, ngayDat, gioBatDau, gioKetThuc, trangThai) {
-            // Cài đặt dữ liệu vào modal sửa
-            // Tạo popup tương tự như thêm mới
+            // Đặt giá trị vào các trường trong modal sửa
+            document.getElementById("edit_maLichDat").value = maLichDat;
+            document.getElementById("edit_maBanBia").value = maBanBia;
+            document.getElementById("edit_maTaiKhoan").value = maTaiKhoan;
+            document.getElementById("edit_ngayDat").value = ngayDat;
+            document.getElementById("edit_gioBatDau").value = gioBatDau;
+            document.getElementById("edit_gioKetThuc").value = gioKetThuc;
+            document.getElementById("edit_trangThai").value = trangThai;
+
+        // Hiển thị modal sửa
+        $('#editModal').modal('show');
         }
     </script>
 </body>
