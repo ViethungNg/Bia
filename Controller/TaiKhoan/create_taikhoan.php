@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmtInsert->execute()) {
             // Thêm thành công
-            echo "<script>alert('Thêm tài khoản thành công!'); window.location.href = 'index.php';</script>";
+            echo "<script>alert('Thêm tài khoản thành công!'); window.location.href = 'manage_taikhoan.php';</script>";
         } else {
             // Có lỗi xảy ra
             echo "<script>alert('Có lỗi xảy ra. Vui lòng thử lại.'); window.history.back();</script>";

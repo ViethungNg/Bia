@@ -1,24 +1,11 @@
-<?php
-session_start(); // Bắt đầu session
-
-// Kiểm tra nếu người dùng đã đăng nhập
-if (!isset($_SESSION['tenDangNhap'])) {
-    // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
-    header("Location: ../../View/Login/login.php");
-    exit();
-}
-
-// Lấy thông tin từ session
-$tenDangNhap = $_SESSION['tenDangNhap'];
-$hoTen = $_SESSION['hoTen'];
-?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đặt bàn bi a</title>
+    <title>Trang User</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="user.css">
     <script>
         // Chức năng hiển thị nội dung khi click vào các mục trong menu
@@ -32,66 +19,61 @@ $hoTen = $_SESSION['hoTen'];
             document.getElementById(contentId).style.display = 'block';
         }
 
-        // Chức năng làm mới bảng cơ sở dữ liệu trong iframe
-        function reloadContent(iframeSrc) {
-            var iframe = document.getElementById('contentIframe');
-            iframe.src = iframeSrc; // Đặt lại nguồn của iframe để làm mới nội dung
-        }
+        // Khởi tạo nội dung hiển thị
+        window.onload = function() {
+            showContent('dashboard'); // Mặc định hiển thị dashboard khi tải trang
+        };
     </script>
 </head>
 <body>
 
-    <!-- Sidebar luôn hiển thị -->
-    <div id="mySidebar" class="sidebar">
-        <h2 style="padding-top: 30px;">Đặt bàn bi a</h2>
-        <a href="javascript:void(0)" onclick="showContent('dashboard')">Tổng quan</a>
-        <a href="javascript:void(0)" onclick="showContent('banBia'); reloadContent('../../Controller/BanBia/manage_banbia.php');">Quản lý Bàn Bi-a</a>
-        <a href="javascript:void(0)" onclick="showContent('lichDat'); reloadContent('../../Controller/LichDat/manage_lichdat.php');">Quản lý Lịch Đặt</a>
-        <a href="javascript:void(0)" onclick="showContent('hoaDon')">Quản lý Hóa Đơn</a>
-        <a href="javascript:void(0)" onclick="showContent('taiKhoan')">Quản lý Tài Khoản</a>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h4 class="text-center">Người dùng - USER</h4>
+        <a href="javascript:void(0)" onclick="showContent('dashboard')">Trang Chủ</a>
+        <a href="javascript:void(0)" onclick="showContent('banBia')">Quản Lý Bàn Bi-a</a>
+        <a href="javascript:void(0)" onclick="showContent('lichDat')">Quản Lý Lịch Đặt</a>
+        <a href="javascript:void(0)" onclick="showContent('hoaDon')">Quản Lý Hóa Đơn</a>
+        <a href="javascript:void(0)" onclick="showContent('taiKhoan')">Quản Lý Tài Khoản</a>
         <a href="javascript:void(0)" onclick="showContent('doimatkhau')">Đổi mật khẩu</a>
-        <a href="../../Model/logout.php">Đăng xuất</a>
+        <a href="../Login/login.php">Đăng Xuất</a>
     </div>
 
-    <!-- Nội dung chính -->
-    <div id="mainContent" class="main-content">
-        <section id="dashboard" class="content-section" style="display: block;">
-            <h2>Tổng quan</h2>
-            <!-- Hiển thị thông báo "Xin chào, tài khoản" -->
-            <p>Xin chào bạn với quyền người dùng - User </p>
-            <p>Tại đây, bạn có thể thực hiện tra cứu, đặt lịch để trải nghiệm ở quán.</p>
+    <!-- Main content -->
+    <div class="main-content">
+        <section id="dashboard" class="content-section" style="display: none;">
+            <h3>Chào mừng đến với trang người dùng!</h3>
+            <p>Đây là trang quản trị của người dùng. Vui lòng sử dụng menu bên trái để điều hướng giữa các chức năng cơ bản phù hợp.</p>
         </section>
 
         <section id="banBia" class="content-section" style="display: none;">
-            <h2>Quản lý Bàn Bi-a</h2>
-            <p>Quản lý danh sách bàn bi-a, thêm, sửa, xóa trạng thái bàn bi-a.</p>
-            
-            <!-- Thêm iframe để nhúng trang quản lý bàn bi-a -->
-            <iframe id="contentIframe" src="../../Controller/BanBia/manage_banbia_USER.php" style="width: 100%; height: 760px;" frameborder="0"></iframe>
+            <iframe src="../../Controller/BanBia/manage_banbia.php" style="width: 100%; height: 900px;" frameborder="0"></iframe>
         </section>
 
         <section id="lichDat" class="content-section" style="display: none;">
-            <h2>Quản lý Lịch Đặt</h2>
-            <p>Quản lý thông tin lịch đặt bàn của người dùng.</p>
-            <iframe id="contentIframe" src="../../Controller/LichDat/manage_lichdat_USER.php" style="width: 100%; height: 760px;" frameborder="0"></iframe>
+            <iframe src="../../Controller/LichDat/manage_lichdat_User.php" style="width: 100%; height: 900px;" frameborder="0"></iframe>
         </section>
 
         <section id="hoaDon" class="content-section" style="display: none;">
-            <h2>Quản lý Hóa Đơn</h2>
-            <p>Kiểm tra hóa đơn thanh toán và tổng thu nhập từ các bàn bi-a.</p>
-            <iframe id="contentIframe" src="../../Controller/HoaDon/manage_hoadon_USER.php" style="width: 100%; height: 760px;" frameborder="0"></iframe>
+            <iframe src="../../Controller/HoaDon/manage_hoadon.php" style="width: 100%; height: 900px;" frameborder="0"></iframe>
         </section>
 
         <section id="taiKhoan" class="content-section" style="display: none;">
-            <h2>Quản lý Tài Khoản</h2>
-            <p>Quản lý danh sách tài khoản người dùng, thêm, sửa hoặc xóa tài khoản.</p>
-            <iframe id="contentIframe" src="../../Controller/TaiKhoan/manage_taikhoan_USER.php" style="width: 100%; height: 760px;" frameborder="0"></iframe>
+            <iframe src="../../Controller/TaiKhoan/manage_taikhoan_User.php" style="width: 100%; height: 900px;" frameborder="0"></iframe>
         </section>
-        
+
         <section id="doimatkhau" class="content-section" style="display: none;">
-            <iframe id="contentIframe" src="../../Model/doimatkhau.php" style="width: 100%; height: 760px;" frameborder="0"></iframe>
+            <iframe src="../Login/DoiMatKhau.php" style="width: 100%; height: 900px;" frameborder="0"></iframe>
+        </section>
+
+        <section id="thongKe" class="content-section" style="display: none;">
+            <iframe src="../../Model/thongke.php" style="width: 100%; height: 900px;" frameborder="0"></iframe>
         </section>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-</html>  
+</html>

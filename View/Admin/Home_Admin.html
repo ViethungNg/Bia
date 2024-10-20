@@ -7,6 +7,22 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="admin.css">
+    <style>
+        .sidebar {
+            background-color: #343a40; /* Màu nền của sidebar */
+            color: white; /* Màu chữ của sidebar */
+            height: 100vh; /* Đặt chiều cao của sidebar */
+            padding-bottom: 20px; /* Thêm khoảng cách dưới cùng */
+        }
+
+        #clock {
+            color: white; /* Màu chữ đồng hồ */
+            position: absolute; /* Để đồng hồ có thể được định vị */
+            bottom: 20px; /* Đặt đồng hồ ở dưới cùng */
+            left: 50%; /* Giữa theo chiều ngang */
+            transform: translateX(-50%); /* Giữa theo chiều ngang */
+        }
+    </style>
     <script>
         // Chức năng hiển thị nội dung khi click vào các mục trong menu
         function showContent(contentId) {
@@ -19,9 +35,20 @@
             document.getElementById(contentId).style.display = 'block';
         }
 
+        // Hàm để cập nhật đồng hồ
+        function updateClock() {
+            var now = new Date();
+            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            var date = now.toLocaleDateString('vi-VN', options);
+            var time = now.toLocaleTimeString('vi-VN');
+            document.getElementById('clock').innerHTML = date + ' - ' + time;
+        }
+
         // Khởi tạo nội dung hiển thị
         window.onload = function() {
             showContent('dashboard'); // Mặc định hiển thị dashboard khi tải trang
+            updateClock(); // Khởi động đồng hồ
+            setInterval(updateClock, 1000); // Cập nhật đồng hồ mỗi giây
         };
     </script>
 </head>
@@ -38,6 +65,7 @@
         <a href="javascript:void(0)" onclick="showContent('thongKe')">Thống Kê</a>
         <a href="javascript:void(0)" onclick="showContent('doimatkhau')">Đổi mật khẩu</a>
         <a href="../Login/login.php">Đăng Xuất</a>
+        <div id="clock" class="text-center mt-3"></div> <!-- Đồng hồ -->
     </div>
 
     <!-- Main content -->
@@ -64,7 +92,7 @@
         </section>
 
         <section id="doimatkhau" class="content-section" style="display: none;">
-            <iframe src="../../Controller/TaiKhoan/doimatkhau.php" style="width: 100%; height: 900px;" frameborder="0"></iframe>
+            <iframe src="../Login/DoiMatKhau.php" style="width: 100%; height: 900px;" frameborder="0"></iframe>
         </section>
 
         <section id="thongKe" class="content-section" style="display: none;">

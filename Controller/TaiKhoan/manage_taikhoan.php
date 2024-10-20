@@ -3,8 +3,17 @@
 include '../../Connect/connect.php';
 session_start();
 
+// Xử lý tìm kiếm
+$soDienThoaiSearch = '';
+if (isset($_POST['soDienThoaiSearch'])) {
+    $soDienThoaiSearch = $_POST['soDienThoaiSearch'];
+}
+
 // Lấy tất cả tài khoản từ cơ sở dữ liệu
 $sql = "SELECT * FROM taikhoan";
+if ($soDienThoaiSearch) {
+    $sql .= " WHERE soDienThoai LIKE '%" . $conn->real_escape_string($soDienThoaiSearch) . "%'";
+}
 $result = $conn->query($sql);
 ?>
 
@@ -22,6 +31,16 @@ $result = $conn->query($sql);
 <body>
 <div class="container mt-5">
     <h2>Quản Lý Tài Khoản</h2>
+    
+    <!-- Nút mở form tra cứu theo số điện thoại -->
+    <button class="btn btn-info mb-3" data-toggle="modal" data-target="#searchPhoneModal">Tìm Kiếm Theo Số Điện Thoại</button>
+    
+    <!-- Nút bỏ lọc -->
+    <form action="" method="POST" class="d-inline">
+        <input type="hidden" name="soDienThoaiSearch" value="">
+        <button type="submit" class="btn btn-secondary mb-3">Bỏ Lọc</button>
+    </form>
+    
     <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addAccountModal">Thêm Tài Khoản</button>
     
     <table class="table table-bordered">
@@ -60,6 +79,32 @@ $result = $conn->query($sql);
             <?php endif; ?>
         </tbody>
     </table>
+</div>
+
+<!-- Modal tìm kiếm theo số điện thoại -->
+<div class="modal fade" id="searchPhoneModal" tabindex="-1" role="dialog" aria-labelledby="searchPhoneLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="searchPhoneLabel">Tìm Kiếm Theo Số Điện Thoại</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="soDienThoaiSearch">Nhập Số Điện Thoại</label>
+                        <input type="text" name="soDienThoaiSearch" id="soDienThoaiSearch" class="form-control" value="<?php echo htmlspecialchars($soDienThoaiSearch); ?>" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- Modal thêm tài khoản -->
@@ -117,23 +162,23 @@ $result = $conn->query($sql);
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="edit_taikhoan.php" method="POST">
+            <form action="update_taikhoan.php" method="POST">
                 <div class="modal-body">
                     <input type="hidden" name="maTaiKhoan" id="editMaTaiKhoan">
                     <div class="form-group">
                         <label for="editTenDangNhap">Tên Đăng Nhập</label>
-                        <input type="text" name="tenDangNhap" id="editTenDangNhap" class="form-control" required>
+                        <input type="text" name="tenDangNhap" id="editTenDangNhap" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="editLoaiTaiKhoan">Loại Tài Khoản</label>
-                        <select name="loaiTaiKhoan" id="editLoaiTaiKhoan" class="form-control" required>
+                        <select name="loaiTaiKhoan" id="editLoaiTaiKhoan" class="form-control">
                             <option value="admin">Admin</option>
                             <option value="user">User</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="editHoTen">Họ Tên</label>
-                        <input type="text" name="hoTen" id="editHoTen" class="form-control" required>
+                        <input type="text" name="hoTen" id="editHoTen" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="editSoDienThoai">Số Điện Thoại</label>
@@ -154,8 +199,9 @@ $result = $conn->query($sql);
 </div>
 
 <script>
+    // Đặt dữ liệu vào modal sửa tài khoản
     $('#editAccountModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); // nút kích hoạt modal
+        var button = $(event.relatedTarget);
         var id = button.data('id');
         var ten = button.data('ten');
         var loai = button.data('loai');

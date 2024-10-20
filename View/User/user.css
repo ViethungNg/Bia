@@ -1,0 +1,54 @@
+
+        /* Sidebar CSS */
+        .sidebar {
+            position: fixed;
+            height: 100%;
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 30px;
+        }
+
+        .sidebar h4 {
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            color: white;
+            display: block;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .sidebar a.active, .sidebar a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Main content CSS */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            height: 100vh;
+        }
+
+        .main-content h2 {
+            margin-bottom: 30px;
+        }
+
+        .main-content div {
+            display: none; /* Ẩn các phần nội dung */
+        }
+
+        .main-content #dashboard {
+            display: block; /* Hiển thị trang dashboard mặc định */
+        }
+
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+        }

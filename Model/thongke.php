@@ -8,8 +8,13 @@ $totalRevenueData = [];
 $totalBookingsData = [];
 $totalPlayingTablesData = [];
 
-// Lấy ngày hôm nay
-$today = date('Y-m-d');
+// Đặt múi giờ
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+// Lấy ngày và giờ hiện tại
+$currentTime = date('H:i:s'); // Giờ hiện tại theo định dạng 24 giờ
+
+
 
 // Lặp qua 7 ngày (bao gồm cả hôm nay)
 for ($i = 0; $i < 7; $i++) {
@@ -36,7 +41,7 @@ for ($i = 0; $i < 7; $i++) {
 }
 
 // Xử lý ngày tìm kiếm
-$searchDate = isset($_POST['searchDate']) ? $_POST['searchDate'] : $today;
+$searchDate = isset($_POST['searchDate']) ? $_POST['searchDate'] : date('Y-m-d');
 
 // Lấy dữ liệu cho ngày tìm kiếm
 $sqlSearchRevenue = "SELECT SUM(tongTien) as totalRevenue FROM hoadon WHERE ngayThanhToan = '$searchDate'";
@@ -69,6 +74,8 @@ $totalPlayingTablesSearch = $searchPlayingTablesRow['totalPlayingTables'];
     <div class="container mt-5">
         <h2 class="text-center mb-4">Thống Kê Doanh Thu</h2>
 
+
+
         <!-- Form tìm kiếm -->
         <form method="POST" class="mb-4">
             <div class="form-group">
@@ -86,7 +93,7 @@ $totalPlayingTablesSearch = $searchPlayingTablesRow['totalPlayingTables'];
                 <tr>
                     <th>Tổng Doanh Thu</th>
                     <th>Tổng Số Lượng Đặt Bàn</th>
-                    <th>Số Bàn chơi</th>
+                    <th>Số Bàn Chơi</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,7 +114,7 @@ $totalPlayingTablesSearch = $searchPlayingTablesRow['totalPlayingTables'];
         <canvas id="bookingChart" width="400" height="200"></canvas>
 
         <!-- Biểu Đồ Số Bàn Đang Chơi -->
-        <h3 class="mt-4">Biểu Đồ Số Bàn chơi (7 Ngày Gần Đây)</h3>
+        <h3 class="mt-4">Biểu Đồ Số Bàn Chơi (7 Ngày Gần Đây)</h3>
         <canvas id="playingTablesChart" width="400" height="200"></canvas>
     </div>
 
@@ -171,7 +178,7 @@ $totalPlayingTablesSearch = $searchPlayingTablesRow['totalPlayingTables'];
             data: {
                 labels: dates,
                 datasets: [{
-                    label: 'Số Bàn Chơi',
+                    label: 'Số Bàn Đang Chơi',
                     data: totalPlayingTablesData,
                     backgroundColor: 'rgba(255, 206, 86, 0.2)',
                     borderColor: 'rgba(255, 206, 86, 1)',
