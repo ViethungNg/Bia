@@ -176,16 +176,18 @@ $result_tai_khoan = $conn->query($sql_tai_khoan);
                 </button>
             </div>
             <form action="edit_lichdat.php" method="POST">
-                <div class="modal-body">
-                    <input type="hidden" name="maLichDat" id="edit_maLichDat">
-                    <div class="form-group">
+                    <div class="modal-body">
+                        <input type="hidden" name="maLichDat" id="edit_maLichDat">
+                        <div class="form-group">
                         <label for="edit_maBanBia">Mã Bàn Bia</label>
-                        <input type="text" name="maBanBia" id="edit_maBanBia" class="form-control" required>
+                        <input type="text" name="maBanBia" id="edit_maBanBia" class="form-control" readonly>
                     </div>
+                    
                     <div class="form-group">
                         <label for="edit_maTaiKhoan">Mã Tài Khoản</label>
-                        <input type="text" name="maTaiKhoan" id="edit_maTaiKhoan" class="form-control" required>
+                        <input type="text" name="maTaiKhoan" id="edit_maTaiKhoan" class="form-control" readonly>
                     </div>
+
                     <div class="form-group">
                         <label for="edit_ngayDat">Ngày Đặt</label>
                         <input type="date" name="ngayDat" id="edit_ngayDat" class="form-control" required>
