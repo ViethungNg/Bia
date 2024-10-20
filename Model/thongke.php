@@ -11,25 +11,7 @@ $totalPlayingTablesData = [];
 // Lấy ngày hôm nay
 $today = date('Y-m-d');
 
-// Tính tổng doanh thu cho ngày hôm nay
-$sqlRevenueToday = "SELECT SUM(tongTien) as totalRevenue FROM hoadon WHERE ngayThanhToan = '$today'";
-$revenueTodayResult = $conn->query($sqlRevenueToday);
-$revenueTodayRow = $revenueTodayResult->fetch_assoc();
-$totalRevenueToday = $revenueTodayRow['totalRevenue'] ? $revenueTodayRow['totalRevenue'] : 0;
-
-// Đếm số lượng đặt bàn cho ngày hôm nay
-$sqlBookingsToday = "SELECT COUNT(*) as totalBookings FROM lichdat WHERE ngayDat = '$today' AND trangThai = 'Đã đặt'";
-$bookingsTodayResult = $conn->query($sqlBookingsToday);
-$bookingsTodayRow = $bookingsTodayResult->fetch_assoc();
-$totalBookingsToday = $bookingsTodayRow['totalBookings'];
-
-// Đếm số bàn đang chơi
-$sqlPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM banbia WHERE trangThai = 'Đang chơi'";
-$playingTablesResult = $conn->query($sqlPlayingTables);
-$playingTablesRow = $playingTablesResult->fetch_assoc();
-$totalPlayingTables = $playingTablesRow['totalPlayingTables'];
-
-// Lặp qua 7 ngày trước (bao gồm hôm nay)
+// Lặp qua 7 ngày (bao gồm cả hôm nay)
 for ($i = 0; $i < 7; $i++) {
     $date = date('Y-m-d', strtotime("-$i days"));
     $dates[] = $date;
@@ -46,9 +28,31 @@ for ($i = 0; $i < 7; $i++) {
     $bookingsRow = $bookingsResult->fetch_assoc();
     $totalBookingsData[] = $bookingsRow['totalBookings'];
 
-    // Đếm số bàn đang chơi (tính luôn cho tất cả các ngày)
-    $totalPlayingTablesData[] = $totalPlayingTables; // Giữ nguyên giá trị số bàn đang chơi
+    // Đếm số bàn đang chơi
+    $sqlPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM lichdat WHERE trangThai = 'Đang chơi'";
+    $playingTablesResult = $conn->query($sqlPlayingTables);
+    $playingTablesRow = $playingTablesResult->fetch_assoc();
+    $totalPlayingTablesData[] = $playingTablesRow['totalPlayingTables'];
 }
+
+// Xử lý ngày tìm kiếm
+$searchDate = isset($_POST['searchDate']) ? $_POST['searchDate'] : $today;
+
+// Lấy dữ liệu cho ngày tìm kiếm
+$sqlSearchRevenue = "SELECT SUM(tongTien) as totalRevenue FROM hoadon WHERE ngayThanhToan = '$searchDate'";
+$searchRevenueResult = $conn->query($sqlSearchRevenue);
+$searchRevenueRow = $searchRevenueResult->fetch_assoc();
+$totalRevenueSearch = $searchRevenueRow['totalRevenue'] ? $searchRevenueRow['totalRevenue'] : 0;
+
+$sqlSearchBookings = "SELECT COUNT(*) as totalBookings FROM lichdat WHERE ngayDat = '$searchDate' AND trangThai = 'Đã đặt'";
+$searchBookingsResult = $conn->query($sqlSearchBookings);
+$searchBookingsRow = $searchBookingsResult->fetch_assoc();
+$totalBookingsSearch = $searchBookingsRow['totalBookings'];
+
+$sqlSearchPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM lichdat WHERE trangThai = 'Đang chơi'";
+$searchPlayingTablesResult = $conn->query($sqlSearchPlayingTables);
+$searchPlayingTablesRow = $searchPlayingTablesResult->fetch_assoc();
+$totalPlayingTablesSearch = $searchPlayingTablesRow['totalPlayingTables'];
 ?>
 
 <!DOCTYPE html>
@@ -68,14 +72,14 @@ for ($i = 0; $i < 7; $i++) {
         <form method="POST" class="mb-4">
             <div class="form-group">
                 <label for="searchDate">Chọn ngày thanh toán:</label>
-                <input type="date" class="form-control" id="searchDate" name="searchDate">
+                <input type="date" class="form-control" id="searchDate" name="searchDate" value="<?php echo $searchDate; ?>">
             </div>
             <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
             <a href="thongke.php" class="btn btn-secondary">Hủy Lọc</a>
         </form>
 
         <!-- Hiển thị kết quả thống kê -->
-        <h3 class="mt-4">Kết Quả Thống Kê Hôm Nay (<?php echo $today; ?>)</h3>
+        <h3 class="mt-4">Kết Quả Thống Kê cho Ngày <?php echo $searchDate; ?></h3>
         <table class="table table-striped table-bordered">
             <thead class="thead-dark">
                 <tr>
@@ -86,23 +90,23 @@ for ($i = 0; $i < 7; $i++) {
             </thead>
             <tbody>
                 <tr>
-                    <td><?php echo $totalRevenueToday; ?></td>
-                    <td><?php echo $totalBookingsToday; ?></td>
-                    <td><?php echo $totalPlayingTables; ?></td>
+                    <td><?php echo $totalRevenueSearch; ?></td>
+                    <td><?php echo $totalBookingsSearch; ?></td>
+                    <td><?php echo $totalPlayingTablesSearch; ?></td>
                 </tr>
             </tbody>
         </table>
 
         <!-- Biểu Đồ Doanh Thu -->
-        <h3 class="mt-4">Biểu Đồ Doanh Thu</h3>
+        <h3 class="mt-4">Biểu Đồ Doanh Thu (7 Ngày Gần Đây)</h3>
         <canvas id="revenueChart" width="400" height="200"></canvas>
 
         <!-- Biểu Đồ Số Lượng Đặt Bàn -->
-        <h3 class="mt-4">Biểu Đồ Số Lượng Đặt Bàn</h3>
+        <h3 class="mt-4">Biểu Đồ Số Lượng Đặt Bàn (7 Ngày Gần Đây)</h3>
         <canvas id="bookingChart" width="400" height="200"></canvas>
 
         <!-- Biểu Đồ Số Bàn Đang Chơi -->
-        <h3 class="mt-4">Biểu Đồ Số Bàn Đang Chơi</h3>
+        <h3 class="mt-4">Biểu Đồ Số Bàn Đang Chơi (7 Ngày Gần Đây)</h3>
         <canvas id="playingTablesChart" width="400" height="200"></canvas>
     </div>
 
