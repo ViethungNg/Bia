@@ -1,4 +1,5 @@
 <?php
+//s
 // Kết nối tới cơ sở dữ liệu
 include '../../Connect/connect.php';
 session_start();
