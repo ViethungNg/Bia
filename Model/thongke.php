@@ -28,8 +28,8 @@ for ($i = 0; $i < 7; $i++) {
     $bookingsRow = $bookingsResult->fetch_assoc();
     $totalBookingsData[] = $bookingsRow['totalBookings'];
 
-    // Đếm số bàn đang chơi
-    $sqlPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM lichdat WHERE trangThai = 'Đang chơi'";
+    // Đếm số bàn chơi cho ngày cụ thể (nhóm điều kiện đúng cách)
+    $sqlPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM lichdat WHERE (trangThai = 'Đang chơi' OR trangThai = 'Hoàn thành' OR trangThai = 'Đã đặt') AND ngayDat = '$date'";
     $playingTablesResult = $conn->query($sqlPlayingTables);
     $playingTablesRow = $playingTablesResult->fetch_assoc();
     $totalPlayingTablesData[] = $playingTablesRow['totalPlayingTables'];
@@ -49,7 +49,8 @@ $searchBookingsResult = $conn->query($sqlSearchBookings);
 $searchBookingsRow = $searchBookingsResult->fetch_assoc();
 $totalBookingsSearch = $searchBookingsRow['totalBookings'];
 
-$sqlSearchPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM lichdat WHERE trangThai = 'Đang chơi'";
+// Đếm số bàn chơi cho ngày tìm kiếm (nhóm điều kiện đúng cách)
+$sqlSearchPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM lichdat WHERE (trangThai = 'Đang chơi' OR trangThai = 'Hoàn thành' OR trangThai = 'Đã đặt') AND ngayDat = '$searchDate'";
 $searchPlayingTablesResult = $conn->query($sqlSearchPlayingTables);
 $searchPlayingTablesRow = $searchPlayingTablesResult->fetch_assoc();
 $totalPlayingTablesSearch = $searchPlayingTablesRow['totalPlayingTables'];
@@ -85,7 +86,7 @@ $totalPlayingTablesSearch = $searchPlayingTablesRow['totalPlayingTables'];
                 <tr>
                     <th>Tổng Doanh Thu</th>
                     <th>Tổng Số Lượng Đặt Bàn</th>
-                    <th>Số Bàn Đang Chơi</th>
+                    <th>Số Bàn chơi</th>
                 </tr>
             </thead>
             <tbody>
@@ -106,7 +107,7 @@ $totalPlayingTablesSearch = $searchPlayingTablesRow['totalPlayingTables'];
         <canvas id="bookingChart" width="400" height="200"></canvas>
 
         <!-- Biểu Đồ Số Bàn Đang Chơi -->
-        <h3 class="mt-4">Biểu Đồ Số Bàn Đang Chơi (7 Ngày Gần Đây)</h3>
+        <h3 class="mt-4">Biểu Đồ Số Bàn chơi (7 Ngày Gần Đây)</h3>
         <canvas id="playingTablesChart" width="400" height="200"></canvas>
     </div>
 
@@ -163,14 +164,14 @@ $totalPlayingTablesSearch = $searchPlayingTablesRow['totalPlayingTables'];
             }
         });
 
-        // Biểu đồ số bàn đang chơi
+        // Biểu đồ số bàn chơi
         var ctxPlayingTables = document.getElementById('playingTablesChart').getContext('2d');
         var playingTablesChart = new Chart(ctxPlayingTables, {
             type: 'bar',
             data: {
                 labels: dates,
                 datasets: [{
-                    label: 'Số Bàn Đang Chơi',
+                    label: 'Số Bàn Chơi',
                     data: totalPlayingTablesData,
                     backgroundColor: 'rgba(255, 206, 86, 0.2)',
                     borderColor: 'rgba(255, 206, 86, 1)',
