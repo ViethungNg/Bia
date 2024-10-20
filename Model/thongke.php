@@ -2,53 +2,52 @@
 // Kết nối tới cơ sở dữ liệu
 include '../Connect/connect.php';
 
-// Khởi tạo biến để lưu kết quả thống kê
-$totalRevenue = 0;
-$totalBookings = 0;
-$totalPlayingTables = 0; // Biến để lưu số bàn đang chơi
+// Khởi tạo mảng để lưu dữ liệu
+$dates = [];
+$totalRevenueData = [];
+$totalBookingsData = [];
+$totalPlayingTablesData = [];
 
-// Kiểm tra nếu có tìm kiếm
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Nhận dữ liệu từ form
-    $searchDate = $_POST['searchDate'];
+// Lấy ngày hôm nay
+$today = date('Y-m-d');
 
-    // Truy vấn tìm kiếm theo ngày thanh toán
-    if (!empty($searchDate)) {
-        // Tính tổng doanh thu trong ngày
-        $sqlRevenue = "SELECT SUM(tongTien) as totalRevenue FROM hoadon WHERE ngayThanhToan = '$searchDate'";
-        $revenueResult = $conn->query($sqlRevenue);
-        $revenueRow = $revenueResult->fetch_assoc();
-        $totalRevenue = $revenueRow['totalRevenue'] ? $revenueRow['totalRevenue'] : 0;
+// Tính tổng doanh thu cho ngày hôm nay
+$sqlRevenueToday = "SELECT SUM(tongTien) as totalRevenue FROM hoadon WHERE ngayThanhToan = '$today'";
+$revenueTodayResult = $conn->query($sqlRevenueToday);
+$revenueTodayRow = $revenueTodayResult->fetch_assoc();
+$totalRevenueToday = $revenueTodayRow['totalRevenue'] ? $revenueTodayRow['totalRevenue'] : 0;
 
-        // Đếm số lượng đặt bàn trong ngày
-        $sqlBookings = "SELECT COUNT(*) as totalBookings FROM lichdat WHERE ngayDat = '$searchDate' AND trangThai = 'Đã đặt'";
-        $bookingsResult = $conn->query($sqlBookings);
-        $bookingsRow = $bookingsResult->fetch_assoc();
-        $totalBookings = $bookingsRow['totalBookings'];
+// Đếm số lượng đặt bàn cho ngày hôm nay
+$sqlBookingsToday = "SELECT COUNT(*) as totalBookings FROM lichdat WHERE ngayDat = '$today' AND trangThai = 'Đã đặt'";
+$bookingsTodayResult = $conn->query($sqlBookingsToday);
+$bookingsTodayRow = $bookingsTodayResult->fetch_assoc();
+$totalBookingsToday = $bookingsTodayRow['totalBookings'];
 
-        // Đếm số bàn đang chơi
-        $sqlPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM banbia WHERE trangThai = 'Đang chơi'";
-        $playingTablesResult = $conn->query($sqlPlayingTables);
-        $playingTablesRow = $playingTablesResult->fetch_assoc();
-        $totalPlayingTables = $playingTablesRow['totalPlayingTables'];
-    }
-} else {
-    // Nếu không tìm kiếm, lấy tổng doanh thu và số lượng đặt bàn cho tất cả
-    $sqlTotalRevenue = "SELECT SUM(tongTien) as totalRevenue FROM hoadon";
-    $totalRevenueResult = $conn->query($sqlTotalRevenue);
-    $totalRevenueRow = $totalRevenueResult->fetch_assoc();
-    $totalRevenue = $totalRevenueRow['totalRevenue'] ? $totalRevenueRow['totalRevenue'] : 0;
+// Đếm số bàn đang chơi
+$sqlPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM banbia WHERE trangThai = 'Đang chơi'";
+$playingTablesResult = $conn->query($sqlPlayingTables);
+$playingTablesRow = $playingTablesResult->fetch_assoc();
+$totalPlayingTables = $playingTablesRow['totalPlayingTables'];
 
-    $sqlTotalBookings = "SELECT COUNT(*) as totalBookings FROM lichdat WHERE trangThai = 'Đã đặt'";
-    $totalBookingsResult = $conn->query($sqlTotalBookings);
-    $totalBookingsRow = $totalBookingsResult->fetch_assoc();
-    $totalBookings = $totalBookingsRow['totalBookings'];
+// Lặp qua 7 ngày trước (bao gồm hôm nay)
+for ($i = 0; $i < 7; $i++) {
+    $date = date('Y-m-d', strtotime("-$i days"));
+    $dates[] = $date;
 
-    // Đếm số bàn đang chơi
-    $sqlPlayingTables = "SELECT COUNT(*) as totalPlayingTables FROM Lichdat WHERE trangThai = 'Đang chơi'";
-    $playingTablesResult = $conn->query($sqlPlayingTables);
-    $playingTablesRow = $playingTablesResult->fetch_assoc();
-    $totalPlayingTables = $playingTablesRow['totalPlayingTables'];
+    // Tính tổng doanh thu
+    $sqlRevenue = "SELECT SUM(tongTien) as totalRevenue FROM hoadon WHERE ngayThanhToan = '$date'";
+    $revenueResult = $conn->query($sqlRevenue);
+    $revenueRow = $revenueResult->fetch_assoc();
+    $totalRevenueData[] = $revenueRow['totalRevenue'] ? $revenueRow['totalRevenue'] : 0;
+
+    // Đếm số lượng đặt bàn
+    $sqlBookings = "SELECT COUNT(*) as totalBookings FROM lichdat WHERE ngayDat = '$date' AND trangThai = 'Đã đặt'";
+    $bookingsResult = $conn->query($sqlBookings);
+    $bookingsRow = $bookingsResult->fetch_assoc();
+    $totalBookingsData[] = $bookingsRow['totalBookings'];
+
+    // Đếm số bàn đang chơi (tính luôn cho tất cả các ngày)
+    $totalPlayingTablesData[] = $totalPlayingTables; // Giữ nguyên giá trị số bàn đang chơi
 }
 ?>
 
@@ -59,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thống Kê Doanh Thu</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container mt-5">
@@ -75,27 +75,112 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <!-- Hiển thị kết quả thống kê -->
-        <h3 class="mt-4">Kết Quả Thống Kê</h3>
+        <h3 class="mt-4">Kết Quả Thống Kê Hôm Nay (<?php echo $today; ?>)</h3>
         <table class="table table-striped table-bordered">
             <thead class="thead-dark">
                 <tr>
                     <th>Tổng Doanh Thu</th>
                     <th>Tổng Số Lượng Đặt Bàn</th>
-                    <th>Số Bàn Đang Chơi</th> <!-- Cột mới -->
+                    <th>Số Bàn Đang Chơi</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><?php echo number_format($totalRevenue, 0, ',', '.') . ' VNĐ'; ?></td>
-                    <td><?php echo $totalBookings; ?></td>
-                    <td><?php echo $totalPlayingTables; ?></td> <!-- Hiển thị số bàn đang chơi -->
+                    <td><?php echo $totalRevenueToday; ?></td>
+                    <td><?php echo $totalBookingsToday; ?></td>
+                    <td><?php echo $totalPlayingTables; ?></td>
                 </tr>
             </tbody>
         </table>
+
+        <!-- Biểu Đồ Doanh Thu -->
+        <h3 class="mt-4">Biểu Đồ Doanh Thu</h3>
+        <canvas id="revenueChart" width="400" height="200"></canvas>
+
+        <!-- Biểu Đồ Số Lượng Đặt Bàn -->
+        <h3 class="mt-4">Biểu Đồ Số Lượng Đặt Bàn</h3>
+        <canvas id="bookingChart" width="400" height="200"></canvas>
+
+        <!-- Biểu Đồ Số Bàn Đang Chơi -->
+        <h3 class="mt-4">Biểu Đồ Số Bàn Đang Chơi</h3>
+        <canvas id="playingTablesChart" width="400" height="200"></canvas>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script>
+        // Dữ liệu cho các biểu đồ
+        var dates = <?php echo json_encode($dates); ?>;
+        var totalRevenueData = <?php echo json_encode($totalRevenueData); ?>;
+        var totalBookingsData = <?php echo json_encode($totalBookingsData); ?>;
+        var totalPlayingTablesData = <?php echo json_encode($totalPlayingTablesData); ?>;
+
+        // Biểu đồ doanh thu
+        var ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+        var revenueChart = new Chart(ctxRevenue, {
+            type: 'bar',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Tổng Doanh Thu',
+                    data: totalRevenueData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Biểu đồ số lượng đặt bàn
+        var ctxBooking = document.getElementById('bookingChart').getContext('2d');
+        var bookingChart = new Chart(ctxBooking, {
+            type: 'bar',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Tổng Số Lượng Đặt Bàn',
+                    data: totalBookingsData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Biểu đồ số bàn đang chơi
+        var ctxPlayingTables = document.getElementById('playingTablesChart').getContext('2d');
+        var playingTablesChart = new Chart(ctxPlayingTables, {
+            type: 'bar',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Số Bàn Đang Chơi',
+                    data: totalPlayingTablesData,
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
