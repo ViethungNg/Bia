@@ -43,31 +43,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập</title>
-    <link rel="stylesheet" href="login.css"> <!-- Thêm link đến file CSS nếu có -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"> <!-- Thêm Bootstrap -->
+    <style>
+        /* CSS tích hợp */
+        body {
+            background-color: #f8f9fa; /* Màu nền nhạt */
+        }
+
+        .login-container {
+            max-width: 400px; /* Chiều rộng tối đa của form */
+            margin: auto; /* Canh giữa form */
+            padding: 20px; /* Padding cho form */
+            border: 1px solid #ccc; /* Viền cho form */
+            border-radius: 8px; /* Bo góc cho form */
+            background-color: #fff; /* Màu nền trắng cho form */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng cho form */
+        }
+
+        h2 {
+            margin-bottom: 20px; /* Khoảng cách phía dưới tiêu đề */
+        }
+
+        .alert {
+            margin-top: 20px; /* Khoảng cách trên thông báo lỗi */
+        }
+    </style>
 </head>
 <body>
-    <h2>Đăng Nhập</h2>
-    <form method="POST" action="">
-        <label for="tenDangNhap">Tên đăng nhập:</label><br>
-        <input type="text" id="tenDangNhap" name="tenDangNhap" required><br>
-        <label for="matKhau">Mật khẩu:</label><br>
-        <input type="password" id="matKhau" name="matKhau" required><br><br>
-        <input type="submit" value="Đăng Nhập">
+    <div class="container mt-5">
+        <div class="login-container">
+            <h2 class="text-center">Đăng Nhập</h2>
+            <form method="POST" action="">
+                <div class="form-group">
+                    <label for="tenDangNhap">Tên đăng nhập:</label>
+                    <input type="text" id="tenDangNhap" name="tenDangNhap" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="matKhau">Mật khẩu:</label>
+                    <input type="password" id="matKhau" name="matKhau" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button>
 
-        <!-- Hiển thị thông báo lỗi nếu có -->
-        <?php if ($error_message): ?>
-            <p style="color: red;"><?php echo $error_message; ?></p>
-        <?php endif; ?>
+                <!-- Hiển thị thông báo lỗi nếu có -->
+                <?php if ($error_message): ?>
+                    <div class="alert alert-danger mt-3"><?php echo $error_message; ?></div>
+                <?php endif; ?>
 
-        <!-- Thêm liên kết Quên mật khẩu và Đăng ký tài khoản vào trong form -->
-        <div class="links">
-            <p>
-                <a href="QuenMatKhau.php">Quên mật khẩu?</a>
-            </p>
-            <p>
-                <a href="DangKy.php">Đăng ký tài khoản</a>
-            </p>
+                <!-- Thêm liên kết Quên mật khẩu và Đăng ký tài khoản vào trong form -->
+                <div class="links text-center mt-3">
+                    <p>
+                        <a href="QuenMatKhau.php">Quên mật khẩu?</a>
+                    </p>
+                    <p>
+                        <a href="DangKy.php">Đăng ký tài khoản</a>
+                    </p>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </body>
 </html>
